@@ -1,6 +1,6 @@
 int main() {
   volatile unsigned char *ioram = (unsigned char *)0x04000000;
-  ioram[0] = 0x03; // video mode 3 - bitmap (240x360, 16bpp, no double buffering)
+  ioram[0] = 0x03; // video mode 3 - bitmap (240x360, 16bpp, no page flipping)
   ioram[1] = 0x04; // background 2
 
   volatile unsigned short *vram = (unsigned short *)0x06000000;
