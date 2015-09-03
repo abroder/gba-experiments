@@ -1,8 +1,8 @@
 #include <string.h>
 
-typedef unsigned short uint8_t;
-typedef unsigned int uint16_t;
-typedef unsigned long uint32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
 
 #define REG_DISPCNT (*(volatile uint16_t *) 0x4000000)
 
@@ -16,24 +16,51 @@ typedef unsigned long uint32_t;
 #define BG_MAP31      0x1f00
 #define BG_SIZE_32x32 0x0000
 
-#define MEM_PALLETE ((uint16_t *) 0x5000000)
+#define MEM_PALLETE ((uint16_t *)(0x5000000))
 
-#define MEM_VRAM ((uint16_t *) 0x6000000)
-#define MEM_CHARBLOCK(x) (uint16_t *)(0x6000000 + (x * 0x4000))
-#define MEM_SCREENBLOCK(x) (uint16_t *)(0x6000000 + (x * 0x800))
+#define MEM_VRAM ((uint16_t *)(0x6000000))
+#define MEM_CHARBLOCK(x) ((uint16_t *)(0x6000000 + (x * 0x4000)))
+#define MEM_SCREENBLOCK(x) ((uint16_t *)(0x6000000 + (x * 0x800)))
 
 static uint16_t pallete[2] = {
   0x0000, 0x7E4B
 };
 static size_t palleteLen = sizeof(pallete);
 
-static uint16_t tiles[1] = {
-  0x0101
+// TODO(aaron): Second tile ends up blank
+static uint16_t tiles[48] = {
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+  0x0000, 0x0000,
+
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111,
+  0x1111, 0x1111
 };
 static size_t tilesLen = sizeof(tiles);
 
-static uint16_t map[2] = {
-  0x1011, 0x0100
+// TODO(aaron): Map is blank so I reset it
+static uint16_t map[1] = {
+  0x0000
 };
 static size_t mapLen = sizeof(map);
 
