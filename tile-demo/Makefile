@@ -5,7 +5,7 @@ PATH := $(DEVKITARM)/bin:$(PATH)
 PROJ    := tile-demo
 TARGET  := $(PROJ)
 
-OBJS    := $(PROJ).o
+OBJS    := $(PROJ).o graphics.o
 
 # --- Build defines ---------------------------------------------------
 
