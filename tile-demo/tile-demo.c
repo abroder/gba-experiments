@@ -21,7 +21,7 @@ typedef unsigned int uint32_t;
 #define BG_MAP31      0x1f00
 #define BG_SIZE_32x32 0x0000
 
-#define MEM_PALLETE ((uint16_t *)(0x5000000))
+#define MEM_PALLETE_BG ((uint16_t *)(0x5000000))
 
 #define MEM_VRAM ((uint16_t *)(0x6000000))
 #define MEM_CHARBLOCK(x) ((uint16_t *)(0x6000000 + (x * 0x4000)))
