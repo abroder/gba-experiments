@@ -13,11 +13,18 @@ typedef struct {
 
 #define REG_DISPCNT (*(volatile uint16_t *) 0x4000000)
 
-#define DISP_MODE0 0x0000
+#define DISP_MODE0  0x0000
+#define DISP_OBJ    0x1000
+#define DISP_OBJ_1D 0x0040
 
 #define MEM_PALLETE_SPRITE ((uint16_t *)(0x5000200))
 
 #define MEM_OVRAM ((uint16_t *)(0x6010000))
+
+#define MEM_OAM ((uint16_t *)(0x7000000))
+
+static OAMEntry objectBuffer[128];
+static size_t objectBufferLen = sizeof(objectBuffer);
 
 // 0: green (transparent), 1: light brown (flesh), 2: dark brown,
 // 3: red
@@ -70,9 +77,15 @@ static uint16_t tiles[64] = {
 static size_t tilesLen = sizeof(tiles);
 
 int main() {
+  OAMEntry *mar = &objectBuffer[0];
+  mar->attr0 = 0b0000000000001010;
+  mar->attr1 = 0b0100000000001010;
+
   memcpy(MEM_PALLETE_SPRITE, pallete, palleteLen);
   memcpy(MEM_OVRAM, tiles, tilesLen);
-  REG_DISPCNT = DISP_MODE0;
+  memcpy(MEM_OAM, objectBuffer, objectBufferLen);
+
+  REG_DISPCNT = DISP_MODE0 | DISP_OBJ | DISP_OBJ_1D;
 
   while (1);
 
