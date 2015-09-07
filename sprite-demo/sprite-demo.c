@@ -17,11 +17,53 @@ typedef struct {
 #define DISP_OBJ    0x1000
 #define DISP_OBJ_1D 0x0040
 
+#define REG_VCOUNT *((volatile uint16_t *) 0x4000006)
+
 #define MEM_PALLETE_SPRITE ((uint16_t *)(0x5000200))
 
 #define MEM_OVRAM ((uint16_t *)(0x6010000))
 
 #define MEM_OAM ((uint16_t *)(0x7000000))
+
+#define OAM_SET_X(oam, x) oam->attr1 = (oam->attr1) | (x & 0x00FF);
+#define OAM_SET_Y(oam, y) oam->attr0 = (oam->attr0) | (y & 0x00FF);
+
+#define OAM_ATTR0_REG 0x0000
+#define OAM_ATTR0_AFF 0x0100
+#define OAM_ATTR0_HID 0x0200
+#define OAM_ATTR0_AFF_DBL 0x0300
+
+#define OAM_ATTR0_GFX_NOR 0x0000
+#define OAM_ATTR0_GFX_ALPH 0x0400
+#define OAM_ATTR0_GFX_WIN 0x0800
+
+#define OAM_ATTR0_MOSAIC 0x1000
+
+#define OAM_ATTR0_COLOR_4BPP 0x0000
+#define OAM_ATTR0_COLOR_8BPP 0x2000
+
+#define OAM_ATTR0_SHAPE_SQUARE 0x0000
+#define OAM_ATTR0_SHAPE_WIDE 0x4000
+#define OAM_ATTR0_SHAPE_TALL 0x8000
+
+#define OAM_ATTR1_FLIP_HORI 0x1000
+#define OAM_ATTR1_FLIP_VERT 0x2000
+
+#define OAM_ATTR1_SIZE_SQUARE_8x8 0x0000
+#define OAM_ATTR1_SIZE_WIDE_16x8 0x0000
+#define OAM_ATTR1_SIZE_TALL_16x8 0x0000
+
+#define OAM_ATTR1_SIZE_SQUARE_16x16 0x4000
+#define OAM_ATTR1_SIZE_WIDE_32x8 0x4000
+#define OAM_ATTR1_SIZE_TALL_8x32 0x4000
+
+#define OAM_ATTR1_SIZE_SQUARE_32x32 0x8000
+#define OAM_ATTR1_SIZE_WIDE_32x16 0x8000
+#define OAM_ATTR1_SIZE_TALL_16x32 0x8000
+
+#define OAM_ATTR1_SIZE_SQUARE_64x64 0xC000
+#define OAM_ATTR1_SIZE_WIDE_64x32 0xC000
+#define OAM_ATTR1_SIZE_TALL_32x64 0xC000
 
 static OAMEntry objectBuffer[128];
 static size_t objectBufferLen = sizeof(objectBuffer);
@@ -76,10 +118,19 @@ static uint16_t tiles[64] = {
 };
 static size_t tilesLen = sizeof(tiles);
 
+static uint16_t xPos = 0;
+static uint16_t yPos = 0;
+
 int main() {
   OAMEntry *mar = &objectBuffer[0];
-  mar->attr0 = 0b0000000000001010;
-  mar->attr1 = 0b0100000000001010;
+  mar->attr0 = OAM_ATTR0_SHAPE_SQUARE;
+  mar->attr1 = OAM_ATTR1_SIZE_SQUARE_16x16;
+
+  int i;
+  for (i = 1; i < 128; ++i) {
+    OAMEntry *mar = &objectBuffer[i];
+    mar->attr0 = OAM_ATTR0_HID;
+  }
 
   memcpy(MEM_PALLETE_SPRITE, pallete, palleteLen);
   memcpy(MEM_OVRAM, tiles, tilesLen);
@@ -87,7 +138,20 @@ int main() {
 
   REG_DISPCNT = DISP_MODE0 | DISP_OBJ | DISP_OBJ_1D;
 
-  while (1);
+  while (1) {
+    while (REG_VCOUNT >= 160);
+    while (REG_VCOUNT < 160);
+
+    if (xPos >= 100) xPos = 0;
+    if (yPos >= 100) yPos = 0;
+
+    OAM_SET_Y (mar, xPos);
+    OAM_SET_X (mar, yPos);
+    xPos++;
+    yPos++;
+
+    memcpy(MEM_OAM, objectBuffer, objectBufferLen);  
+  };
 
   return 0;
 }
